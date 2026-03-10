@@ -22,17 +22,14 @@
 <h2 id="location"></h2>
 
 <form id="complaintForm">
+  <label>Select Issue:</label>
+  <select name="issue" id="issueOptions" required>
+  </select>
 
-<label>Select Issue:</label>
+  <label>Upload Photo (Optional):</label>
+  <input type="file" name="photo" id="photoInput" accept="image/*">
 
-<select id="issueOptions" required></select>
-
-<label>Upload Photo (Optional):</label>
-
-<input type="file" id="photoInput">
-
-<button type="submit">Submit Complaint</button>
-
+  <button type="submit">Submit Complaint</button>
 </form>
 
 <p id="statusMessage"></p>
