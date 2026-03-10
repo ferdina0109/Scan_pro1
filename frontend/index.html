@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Scan2Sustain</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Scan2Sustain</h1>
+
+<p class="subtitle">Smart QR Based Cleanliness Reporting System</p>
+
+<h2 id="location"></h2>
+
+<form id="complaintForm">
+  <label>Select Issue:</label>
+  <select name="issue" id="issueOptions" required>
+  </select>
+
+  <label>Upload Photo (Optional):</label>
+  <input type="file" name="photo" id="photoInput" accept="image/*">
+
+  <button type="submit">Submit Complaint</button>
+</form>
+
+<p id="statusMessage"></p>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
