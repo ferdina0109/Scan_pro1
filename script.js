@@ -1,5 +1,5 @@
-const supabaseUrl = "YOUR_SUPABASE_URL"
-const supabaseKey = "YOUR_SUPABASE_ANON_KEY"
+const supabaseUrl = "https://sbrweumvawvcwxztyeeh.supabase.co"
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicndldW12YXd2Y3d4enR5ZWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxMzI5MzEsImV4cCI6MjA4ODcwODkzMX0.CcmUB09BEtGUqRBDmKVhnoX9tF7oAOLDuYmQE34cenk"
 
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
 
@@ -84,5 +84,6 @@ document.getElementById("statusMessage").innerText =
 "Complaint submitted successfully"
 
 }
+
 
 })
