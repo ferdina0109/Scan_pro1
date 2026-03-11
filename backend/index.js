@@ -121,6 +121,22 @@ app.post("/complete-task", async (req, res) => {
   }
 });
 
+// ---------- Endpoint 4: Get Complaints ----------
+app.get("/complaints", async (req, res) => {
+  try {
+    const { data: complaints } = await supabase
+      .from("complaints")
+      .select("*")
+      .is("completed_at", null)  // Only pending complaints
+      .order("created_at", { ascending: false });
+
+    res.json({ complaints });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to get complaints" });
+  }
+});
+
 // ---------- Start Server ----------
 app.listen(PORT, () => {
   console.log(`Scan2Sustain backend running at http://localhost:${PORT}`);
