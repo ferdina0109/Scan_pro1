@@ -33,7 +33,12 @@ export async function POST(req) {
 
     const { error: updateError } = await supabase
       .from("complaints")
-      .update({ completed_by: staff_id, completed_at: new Date() })
+      .update({
+        status: "completed",
+        completed_by: staff_id,
+        completed_at: new Date(),
+        updated_at: new Date(),
+      })
       .eq("id", complaint_id);
 
     if (updateError) throw updateError;
@@ -46,8 +51,12 @@ export async function POST(req) {
 
     if (staffError) throw staffError;
 
-    const message = `Task Completed!\nLocation: ${complaint.location}\nIssue: ${complaint.issue}\nCompleted at: ${new Date().toLocaleString()}`;
-    if (staff?.phone_number) await sendWhatsApp(staff.phone_number, message);
+    try {
+      const message = `Task Completed!\nLocation: ${complaint.location}\nIssue: ${complaint.issue}\nCompleted at: ${new Date().toLocaleString()}`;
+      if (staff?.phone_number) await sendWhatsApp(staff.phone_number, message);
+    } catch (notifyErr) {
+      void notifyErr;
+    }
 
     return json({ message: "Task marked as completed" });
   } catch (err) {

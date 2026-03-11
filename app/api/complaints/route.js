@@ -12,9 +12,9 @@ export async function GET() {
     const { data: complaints, error } = await supabase
       .from("complaints")
       .select(
-        "id, location, location_type, issue, staff_floor, photo_url, created_at, completed_by, completed_at",
+        "id, location_id, location, location_type, issue, staff_floor, photo_url, status, created_at, updated_at, completed_by, completed_at",
       )
-      .is("completed_at", null)
+      .eq("status", "pending")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
