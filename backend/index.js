@@ -105,6 +105,13 @@ app.post("/complete-task", async (req, res) => {
   try {
     const { complaint_id, staff_id } = req.body;
 
+    // Get complaint details
+    const { data: complaint } = await supabase
+      .from("complaints")
+      .select("location, issue")
+      .eq("id", complaint_id)
+      .single();
+
     // Update complaint as completed
     const { error } = await supabase
       .from("complaints")
@@ -112,6 +119,17 @@ app.post("/complete-task", async (req, res) => {
       .eq("id", complaint_id);
 
     if (error) throw error;
+
+    // Get staff phone
+    const { data: staff } = await supabase
+      .from("cleaning_staff")
+      .select("phone_number")
+      .eq("id", staff_id)
+      .single();
+
+    // Send WhatsApp confirmation to staff
+    const message = `Task Completed!\nLocation: ${complaint.location}\nIssue: ${complaint.issue}\nCompleted at: ${new Date().toLocaleString()}`;
+    await sendWhatsApp(staff.phone_number, message);
 
     res.json({ message: "Task marked as completed" });
 
