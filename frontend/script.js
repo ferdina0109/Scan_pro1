@@ -7,67 +7,10 @@ let staffFloor = urlParams.get("floor");
 // Populate issues dropdown
 const issueSelect = document.getElementById("issueOptions");
 
-// If no params (for testing), show selection form
-if (!locationName || !locationType) {
-  document.getElementById("location").innerText = "Select Location for Testing:";
-
-  // Hide the complaint form initially
+// If no params, show error
+if (!locationName || !locationType || !staffFloor) {
+  document.getElementById("location").innerText = "Error: Please scan a valid QR code to access this page.";
   document.getElementById("complaintForm").style.display = "none";
-
-  // Create a selection form
-  const selectForm = document.createElement("form");
-  selectForm.id = "locationSelectForm";
-
-  const locLabel = document.createElement("label");
-  locLabel.textContent = "Location Name:";
-  const locInput = document.createElement("input");
-  locInput.type = "text";
-  locInput.id = "locInput";
-  locInput.required = true;
-
-  const floorLabel = document.createElement("label");
-  floorLabel.textContent = "Floor/Block:";
-  const floorInput = document.createElement("input");
-  floorInput.type = "text";
-  floorInput.id = "floorInput";
-  floorInput.required = true;
-
-  const typeLabel = document.createElement("label");
-  typeLabel.textContent = "Location Type:";
-  const typeSelect = document.createElement("select");
-  typeSelect.id = "typeSelect";
-  typeSelect.required = true;
-  ["washroom", "corridor", "drinking area"].forEach(type => {
-    const option = document.createElement("option");
-    option.value = type;
-    option.text = type;
-    typeSelect.appendChild(option);
-  });
-
-  const submitBtn = document.createElement("button");
-  submitBtn.type = "submit";
-  submitBtn.textContent = "Proceed";
-
-  selectForm.appendChild(locLabel);
-  selectForm.appendChild(locInput);
-  selectForm.appendChild(floorLabel);
-  selectForm.appendChild(floorInput);
-  selectForm.appendChild(typeLabel);
-  selectForm.appendChild(typeSelect);
-  selectForm.appendChild(submitBtn);
-
-  document.querySelector(".container").appendChild(selectForm);
-
-  selectForm.addEventListener("submit", function(e) {
-    e.preventDefault();
-    locationName = locInput.value;
-    staffFloor = floorInput.value;
-    locationType = typeSelect.value;
-    document.getElementById("location").innerText = "Location: " + locationName;
-    selectForm.style.display = "none";
-    document.getElementById("complaintForm").style.display = "block";
-    populateIssues();
-  });
 } else {
   // Display location
   document.getElementById("location").innerText = "Location: " + locationName;
