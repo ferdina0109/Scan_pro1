@@ -3,6 +3,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+function normalizeLocation(loc) {
+  if (!loc) return "";
+  return String(loc).replaceAll("_", " ").replace(/\s+/g, " ").trim();
+}
+
+function inferFloorFromLocation(loc) {
+  if (!loc) return "";
+  const m = String(loc).match(/floor\s*([0-9]+)/i);
+  return m?.[1] ? String(m[1]) : "";
+}
+
 function getIssues(locationType) {
   if (locationType === "washroom") {
     return ["Water leakage in toilet taps", "Smelly restroom", "Unclean floor", "Overflowing dustbin"];
@@ -20,9 +31,10 @@ export default function HomePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const locationName = searchParams.get("loc");
+  const rawLocationName = searchParams.get("loc");
+  const locationName = normalizeLocation(rawLocationName);
   const locationType = searchParams.get("type");
-  const staffFloor = searchParams.get("floor");
+  const staffFloor = searchParams.get("floor") || inferFloorFromLocation(rawLocationName) || inferFloorFromLocation(locationName);
 
   const issues = useMemo(() => getIssues(locationType), [locationType]);
   const [selectedIssue, setSelectedIssue] = useState(issues[0] || "");
