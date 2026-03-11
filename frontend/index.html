@@ -19,30 +19,18 @@
 
 <p class="subtitle">Smart QR Based Cleanliness Reporting System</p>
 
-<button id="staffDashboardBtn">Staff Dashboard</button>
+<h2 id="location"></h2>
 
-<div id="complaintSection">
-  <h2 id="location"></h2>
+<form id="complaintForm">
+  <label>Select Issue:</label>
+  <select name="issue" id="issueOptions" required>
+  </select>
 
-  <form id="complaintForm">
-    <label>Select Issue:</label>
-    <select name="issue" id="issueOptions" required>
-    </select>
+  <label>Upload Photo (Optional):</label>
+  <input type="file" name="photo" id="photoInput" accept="image/*">
 
-    <label>Upload Photo (Optional):</label>
-    <input type="file" name="photo" id="photoInput" accept="image/*">
-
-    <button type="submit">Submit Complaint</button>
-  </form>
-</div>
-
-<div id="staffSection" style="display: none;">
-  <h2>Staff Dashboard</h2>
-  <label>Your Staff ID:</label>
-  <input type="number" id="staffIdInput" required>
-  <button id="loadComplaintsBtn">Load Pending Complaints</button>
-  <div id="complaintsList"></div>
-</div>
+  <button type="submit">Submit Complaint</button>
+</form>
 
 <p id="statusMessage"></p>
 
