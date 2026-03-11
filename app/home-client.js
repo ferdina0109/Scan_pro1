@@ -10,7 +10,7 @@ function normalizeLocation(loc) {
 
 function inferFloorFromLocation(loc) {
   if (!loc) return "";
-  const m = String(loc).match(/floor\\s*([0-9]+)/i);
+  const m = String(loc).match(/floor\s*([0-9]+)/i);
   return m?.[1] ? String(m[1]) : "";
 }
 
@@ -50,7 +50,8 @@ export default function HomeClient() {
   const [knownLocations, setKnownLocations] = useState([]);
   const [locationsError, setLocationsError] = useState("");
 
-  const isValid = Boolean(locationName && locationType && staffFloor);
+  // QR links always provide `loc` + `type`. `floor` is optional (may be inferred from loc).
+  const isValid = Boolean(locationName && locationType);
 
   useEffect(() => {
     if (!selectedIssue && issues[0]) setSelectedIssue(issues[0]);
@@ -118,7 +119,7 @@ export default function HomeClient() {
           location: locationName,
           location_type: locationType,
           issue: selectedIssue,
-          staff_floor: staffFloor,
+          staff_floor: staffFloor || null,
           photo_name: photoName,
         }),
       });
@@ -211,4 +212,3 @@ export default function HomeClient() {
     </div>
   );
 }
-
