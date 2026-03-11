@@ -1,12 +1,14 @@
 // index.js - Full Scan2Sustain backend with Supabase + Twilio WhatsApp + Points system
 
+require('dotenv').config();
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const twilio = require("twilio");
 const cors = require("cors");
 const supabase = require("@supabase/supabase-js").createClient(
-  "https://sbrweumvawvcwxztyeeh.supabase.co",           // Replace with your Supabase URL
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNicndldW12YXd2Y3d4enR5ZWVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxMzI5MzEsImV4cCI6MjA4ODcwODkzMX0.CcmUB09BEtGUqRBDmKVhnoX9tF7oAOLDuYmQE34cenk"       // Replace with your Supabase anon key
+  process.env.SUPABASE_URL,           // Replace with your Supabase URL
+  process.env.SUPABASE_ANON_KEY       // Replace with your Supabase anon key
 );
 
 const app = express();
@@ -21,8 +23,8 @@ app.use(bodyParser.json());
 app.use(express.static('../frontend'));
 
 // ---------- Twilio WhatsApp Setup ----------
-const accountSid = "ACa8275e629216b73edf11f921bb80188c"; // Twilio SID
-const authToken = "5623d7e89ffc99986806796d40160ce4";   // Twilio Auth Token
+const accountSid = process.env.TWILIO_ACCOUNT_SID; // Twilio SID
+const authToken = process.env.TWILIO_AUTH_TOKEN;   // Twilio Auth Token
 const client = twilio(accountSid, authToken);
 const twilioWhatsAppNumber = "whatsapp:+14155238886"; // Twilio sandbox WhatsApp number
 
