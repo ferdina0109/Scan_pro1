@@ -124,8 +124,18 @@ export default function HomeClient() {
         }),
       });
 
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || data.message || "Request failed");
+      const raw = await res.text();
+      let data = {};
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        data = { raw };
+      }
+
+      if (!res.ok) {
+        const msg = data.error || data.message || (raw ? raw.slice(0, 200) : "") || `HTTP ${res.status}`;
+        throw new Error(msg);
+      }
 
       setStatus("Complaint submitted successfully!");
     } catch (err) {
