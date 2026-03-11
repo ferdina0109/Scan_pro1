@@ -4,6 +4,20 @@ let locationName = urlParams.get("loc");
 let locationType = urlParams.get("type");
 let staffFloor = urlParams.get("floor");
 
+function normalizeLocation(loc) {
+  if (!loc) return "";
+  return String(loc).replaceAll("_", " ").replace(/\s+/g, " ").trim();
+}
+
+function inferFloorFromLocation(loc) {
+  if (!loc) return "";
+  const m = String(loc).match(/floor\s*([0-9]+)/i);
+  return m?.[1] ? String(m[1]) : "";
+}
+
+locationName = normalizeLocation(locationName);
+if (!staffFloor) staffFloor = inferFloorFromLocation(locationName);
+
 // Populate issues dropdown
 const issueSelect = document.getElementById("issueOptions");
 
