@@ -9,6 +9,7 @@ This repo has been migrated to Next.js so the frontend and backend deploy togeth
    - `SUPABASE_ANON_KEY`
    - `TWILIO_ACCOUNT_SID`
    - `TWILIO_AUTH_TOKEN`
+2. Ensure your Supabase tables exist (see `supabase/schema.sql`).
 2. Install deps: `npm.cmd install`
 3. Run: `npm.cmd run dev`
 4. Open: `http://localhost:3000/?loc=Test&type=washroom&floor=1`

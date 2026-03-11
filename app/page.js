@@ -32,6 +32,8 @@ export default function HomePage() {
   const [manualLocation, setManualLocation] = useState("");
   const [manualType, setManualType] = useState("washroom");
   const [manualFloor, setManualFloor] = useState("");
+  const [knownLocations, setKnownLocations] = useState([]);
+  const [locationsError, setLocationsError] = useState("");
 
   const isValid = Boolean(locationName && locationType && staffFloor);
 
@@ -45,6 +47,36 @@ export default function HomePage() {
     if (locationType) setManualType(locationType);
     if (staffFloor) setManualFloor(staffFloor);
   }, [locationName, locationType, staffFloor]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/locations");
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Failed to load locations");
+        if (!cancelled) {
+          setKnownLocations(Array.isArray(data.locations) ? data.locations : []);
+          setLocationsError("");
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setKnownLocations([]);
+          setLocationsError(err?.message || "Failed to load locations");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  function onLocationSelect(name) {
+    setManualLocation(name);
+    const match = knownLocations.find((l) => l.name === name);
+    if (match?.location_type) setManualType(match.location_type);
+    if (match?.staff_floor) setManualFloor(String(match.staff_floor));
+  }
 
   function onContinue(e) {
     e.preventDefault();
@@ -97,13 +129,31 @@ export default function HomePage() {
 
           <form onSubmit={onContinue}>
             <label>Location:</label>
-            <input
-              type="text"
-              required
-              value={manualLocation}
-              onChange={(e) => setManualLocation(e.target.value)}
-              placeholder="e.g., Block A Washroom"
-            />
+            {knownLocations.length ? (
+              <select
+                required
+                value={manualLocation}
+                onChange={(e) => onLocationSelect(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select a location
+                </option>
+                {knownLocations.map((l) => (
+                  <option key={l.name} value={l.name}>
+                    {l.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                required
+                value={manualLocation}
+                onChange={(e) => setManualLocation(e.target.value)}
+                placeholder="e.g., Block A Washroom"
+              />
+            )}
+            {locationsError ? <p className="statusMessage">{locationsError}</p> : null}
 
             <label>Location Type:</label>
             <select required value={manualType} onChange={(e) => setManualType(e.target.value)}>

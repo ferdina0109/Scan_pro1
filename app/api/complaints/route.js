@@ -11,7 +11,9 @@ export async function GET() {
     const supabase = getSupabase();
     const { data: complaints, error } = await supabase
       .from("complaints")
-      .select("*")
+      .select(
+        "id, location, location_type, issue, staff_floor, photo_url, created_at, completed_by, completed_at",
+      )
       .is("completed_at", null)
       .order("created_at", { ascending: false });
 

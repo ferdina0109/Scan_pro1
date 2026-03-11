@@ -30,11 +30,12 @@ export async function POST(req) {
           location,
           location_type,
           issue,
+          staff_floor,
           photo_url: photo_name || null,
           created_at: new Date(),
         },
       ])
-      .select();
+      .select("id, location, location_type, issue, staff_floor, photo_url, created_at, completed_by, completed_at");
 
     if (complaintError) throw complaintError;
 
