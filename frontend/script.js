@@ -43,6 +43,12 @@ function populateIssues() {
 document.getElementById("complaintForm").addEventListener("submit", async function(e){
   e.preventDefault(); // Prevent default form submit
 
+  const isLocal =
+    window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const submitUrl = isLocal
+    ? "http://localhost:3000/submit-complaint"
+    : "/api/submit-complaint";
+
   const selectedIssue = issueSelect.value;
   const photoInput = document.getElementById("photoInput");
 
@@ -51,7 +57,7 @@ document.getElementById("complaintForm").addEventListener("submit", async functi
 
   // Send to backend
   try {
-    const res = await fetch("http://localhost:3000/submit-complaint", { // <-- Your backend URL
+    const res = await fetch(submitUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -68,7 +74,7 @@ document.getElementById("complaintForm").addEventListener("submit", async functi
     if(res.ok){
       alert("Complaint submitted successfully!");
     } else {
-      alert("Error submitting complaint: " + data.message);
+      alert("Error submitting complaint: " + (data.error || data.message || "Unknown error"));
     }
 
   } catch(err){
