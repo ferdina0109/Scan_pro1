@@ -37,7 +37,7 @@ if (!locationName || !locationType) {
   const typeSelect = document.createElement("select");
   typeSelect.id = "typeSelect";
   typeSelect.required = true;
-  ["washroom", "corridor"].forEach(type => {
+  ["washroom", "corridor", "drinking area"].forEach(type => {
     const option = document.createElement("option");
     option.value = type;
     option.text = type;
@@ -83,6 +83,9 @@ function populateIssues() {
   }
   if(locationType === "corridor"){
     issues = ["Overflowing dustbin","Litter on floor","Unclean corridor","Bad smell in corridor"];
+  }
+  if(locationType === "drinking area"){
+    issues = ["Dirty sink","Overflowing dustbin","Water leakage"];
   }
 
   issues.forEach(issue => {

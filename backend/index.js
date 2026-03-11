@@ -13,7 +13,7 @@ const app = express();
 const PORT = 3000;
 
 app.use(cors({
-  origin: ["https://ferdina0109.github.io"], // Allow requests from GitHub Pages
+  origin: ["https://ferdina0109.github.io", "http://localhost:3000"], // Allow requests from GitHub Pages and local testing
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type"]
 }));
@@ -56,6 +56,11 @@ app.post("/submit-complaint", async (req, res) => {
   try {
     const { location, location_type, issue, staff_floor, photo_name } = req.body;
 
+    // Validate required fields
+    if (!location || !location_type || !issue || !staff_floor) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
     // Insert complaint into Supabase
     const { data: complaintData, error: complaintError } = await supabase
       .from("complaints")
@@ -80,98 +85,39 @@ app.post("/submit-complaint", async (req, res) => {
 
     if (staffError) throw staffError;
 
-    // Get all supervisors
-    const { data: supervisorData, error: supervisorError } = await supabase
-      .from("supervisors")
-      .select("phone_number");
-
-    if (supervisorError) throw supervisorError;
-
-    const message = `New complaint reported: "${issue}" at ${location}`;
+    const message = `New Complaint:\nLocation: ${location}\nIssue: ${issue}\nTime: ${new Date().toLocaleTimeString()}`;
 
     // Send WhatsApp to staff
     for (let staff of staffData) {
       await sendWhatsApp(staff.phone_number, message);
     }
 
-    // Send WhatsApp to supervisors
-    for (let sup of supervisorData) {
-      await sendWhatsApp(sup.phone_number, message);
-    }
-
     res.json({ message: "Complaint submitted & notifications sent" });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to submit complaint" });
+    res.status(500).json({ error: err.message || "Failed to submit complaint" });
   }
 });
 
-// ---------- Endpoint 3: Complete Task & Points ----------
+// ---------- Endpoint 3: Complete Task ----------
 app.post("/complete-task", async (req, res) => {
   try {
-    const { complaint_id, staff_id, supervisor_override } = req.body;
-
-    // Get complaint creation time
-    const { data: complaint } = await supabase
-      .from("complaints")
-      .select("created_at")
-      .eq("id", complaint_id)
-      .single();
-
-    const completedAt = new Date();
-    const createdAt = new Date(complaint.created_at);
-    const diffMinutes = (completedAt - createdAt) / 60000;
-
-    // Points calculation
-    let earnedPoints = 10; // default
-    if (supervisor_override) {
-      earnedPoints = -20; // negative points if supervisor says incomplete
-    } else if (diffMinutes <= 20) {
-      earnedPoints = 100;
-    } else if (diffMinutes <= 45) {
-      earnedPoints = 50;
-    } else if (diffMinutes <= 60) {
-      earnedPoints = 25;
-    }
-
-    // Update staff points
-    await supabase
-      .from("cleaning_staff")
-      .update({ points: supabase.raw("points + ?", [earnedPoints]) })
-      .eq("id", staff_id);
+    const { complaint_id, staff_id } = req.body;
 
     // Update complaint as completed
-    await supabase
+    const { error } = await supabase
       .from("complaints")
-      .update({ completed_by: staff_id, completed_at: completedAt })
+      .update({ completed_by: staff_id, completed_at: new Date() })
       .eq("id", complaint_id);
 
-    res.json({
-      message: "Task marked completed",
-      points: earnedPoints,
-      completed_at: completedAt
-    });
+    if (error) throw error;
+
+    res.json({ message: "Task marked as completed" });
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to complete task" });
-  }
-});
-
-// ---------- Endpoint 4: Leaderboard ----------
-app.get("/leaderboard", async (req, res) => {
-  try {
-    const { data: leaderboard } = await supabase
-      .from("cleaning_staff")
-      .select("name, points")
-      .order("points", { ascending: false })
-      .limit(10);
-
-    res.json({ leaderboard });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to get leaderboard" });
   }
 });
 
