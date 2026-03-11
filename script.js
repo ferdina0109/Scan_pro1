@@ -88,16 +88,22 @@ document.getElementById("complaintForm").addEventListener("submit", async functi
       })
     });
 
-    const data = await res.json();
+    const raw = await res.text();
+    let data = {};
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      data = { raw };
+    }
 
     if(res.ok){
       alert("Complaint submitted successfully!");
     } else {
-      alert("Error submitting complaint: " + (data.error || data.message || "Unknown error"));
+      alert("Error submitting complaint: " + (data.error || data.message || ("HTTP " + res.status)));
     }
 
   } catch(err){
     console.error(err);
-    alert("Error submitting complaint. Please try again.");
+    alert("Error submitting complaint: " + (err?.message || "Please try again."));
   }
 });
